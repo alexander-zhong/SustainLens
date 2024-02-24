@@ -13,8 +13,12 @@ def setup():
     # The labels
     class_labels = ['Non-Recyclable', 'Recyclable']
     
+    # Start with an empty linear stack neural network model 
+    keras_model = models.Sequential()
     
-    print(training_labels)
+    
+    # Start by adding layers
+    keras_model.add(layers.Conv2D(32, (3, 3), activation="relu"), input_shape=(32, 32, 3))
     
 
 # REQUIRES: Must be a valid image and model
