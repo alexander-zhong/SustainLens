@@ -7,8 +7,8 @@ import classifier
 app = Flask(__name__)
 
 #Configures for our image classifier
-photo = UploadSet('photos', IMAGES)
 app.config['UPLOADED_PHOTOS_DEST'] = 'uploads'
+photo = UploadSet('photos', IMAGES)
 configure_uploads(app, photo)
 
 
@@ -20,10 +20,13 @@ def index():
 def camera():
     return render_template("camera.html")
 
-@app.route("/upload")
+@app.route("/upload", methods=['POST'])
 def upload():
-    if request.method == 'POST' and 'photo' in request.files:
-        filename = photo.save(request.files['photo'])
-    return render_template("upload.html")
+    picture = request.files['picture']
 
+    if not picture:
+        return 'No picture has been uploaded'
+    else:
+        return 'picture has been uploaded'
+    
 
