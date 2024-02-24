@@ -9,7 +9,12 @@ from keras import datasets, layers, models, preprocessing
 # Returns a trained model for classification
 def setup():
     (training_images, training_labels), (testing_images, testing_labels) = load_data_set("RecycleDataSet")
-    print(training_images)
+    
+    # The labels
+    class_labels = ['Non-Recyclable', 'Recyclable']
+    
+    
+    print(training_labels)
     
 
 # REQUIRES: Must be a valid image and model
@@ -18,13 +23,14 @@ def classify(model, img):
     pass
 
 
+
 # Loads in the custom dataset that we have curated
 def load_data_set(path):
     
-    # Scales the pixel values of the images (preprocessing step) and establishes a 0.70 training and 0.30 testing split
-    training_data_generator = preprocessing.image.ImageDataGenerator(rescale=1./255, validation_split=0.3)
+    # Scales the pixel values of the images (preprocessing step) and establishes a 0.75 training and 0.25 testing split
+    training_data_generator = preprocessing.image.ImageDataGenerator(rescale=1./255, validation_split=0.25)
     
-    # Creates an augmented data
+    # Creates an augmented training data
     training_data = training_data_generator.flow_from_directory(
         path,
         target_size=(64, 64), # This would be the size of our pictures
@@ -33,6 +39,7 @@ def load_data_set(path):
         subset="training"
     )
     
+    # Creates an augmented training data
     validation_data = training_data_generator.flow_from_directory(
         path,
         target_size=(64, 64), # This would be the size of our pictures

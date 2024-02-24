@@ -20,10 +20,10 @@ def index():
 def camera():
     return render_template("camera.html")
 
-@app.route("/picture")
+@app.route("/upload")
 def picture():
     if request.method == 'POST' and 'photo' in request.files:
         filename = photo.save(request.files['photo'])
-    return render_template("picture.html")
+    return render_template("upload.html")
 
 
