@@ -1,7 +1,7 @@
 import cv2
 import numpy
 import matplotlib.pyplot
-from keras import datasets, layers, models, preprocessing
+from keras import datasets, layers, models, preprocessing, applications
 
 
 
@@ -52,8 +52,24 @@ def setup():
 
 # REQUIRES: Must be a valid image and model
 # Function for the flask app to classify an image with a given model 
-def classify(model, img):
-    pass
+def classify(img):
+    keras_model = models.load_model('recyclable_model.keras')
+
+    # Preprocessing 
+    img = cv2.resize(img, (64, 64)) 
+    img_data = preprocessing.image.img_to_array(img)
+    img_data = numpy.expand_dims(img_data, axis = 0)
+    
+    img_data = applications.resnet50.preprocess_input(img_data / 255)
+    prediction = keras_model.predict(img_data)
+    
+    # The labels
+    class_labels = ['Non-Recyclable', 'Recyclable']
+    
+    result = numpy.argmax(prediction)
+    result = class_labels[result]
+    
+    return result
 
 
 # Loads in the custom dataset that we have curated
@@ -82,7 +98,5 @@ def load_data_set(path):
     
     return next(training_data), next(validation_data)
 
-    
-setup()
-    
+
 

@@ -2,11 +2,16 @@
 
 {% block body %}
     
-<form action ="/upload" method ="POST">
+<form action ="/upload" method ="POST" enctype="multipart/form-data">
     <label>Upload a picture</label>
-    <input type = 'file' name = "picture">
+    <input type ='file' name ="picture">
     <input type="submit" value="Upload a file">
 </form>
 
+
+{% if found %} 
+    <img src="data:image/png;base64,{{ picture }}">
+    <h1>AI has detected as {{ result }}</h1>
+{% endif %}
 
 {% endblock %}
