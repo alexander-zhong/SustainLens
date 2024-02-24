@@ -20,13 +20,17 @@ def index():
 def camera():
     return render_template("camera.html")
 
-@app.route("/upload", methods=['POST'])
+@app.route("/upload", methods=['GET', 'POST'])
 def upload():
-    picture = request.files['picture']
+    if (request.method == "POST"):
+        
+        picture = request.files['picture']
 
-    if not picture:
-        return 'No picture has been uploaded'
-    else:
-        return 'picture has been uploaded'
+        if not picture:
+            return 'No picture has been uploaded'
+        else:
+            return 'picture has been uploaded'
+    elif (request.method == "GET"):
+        return render_template("upload.html")
     
 
