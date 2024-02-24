@@ -2,15 +2,24 @@ from flask import Flask, render_template, request
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 import classifier 
+import cv2 
 
 
 app = Flask(__name__)
+camera = cv2.VideoCapture(0)
 
 #Configures for our image classifier
 app.config['UPLOADED_PHOTOS_DEST'] = 'uploads'
 photo = UploadSet('photos', IMAGES)
 configure_uploads(app, photo)
 
+#returns the still frame of successful 
+def capture_frame():
+    success,frame = camera.read()
+    if success:
+        return frame
+    else:
+        return None  
 
 @app.route("/")
 def index():
@@ -18,7 +27,8 @@ def index():
     
 @app.route("/camera")
 def camera():
-    return render_template("camera.html")
+    capture_frame = capture_frame()
+    return render_template("camera.html", capture_frame=capture_frame)
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
