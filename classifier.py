@@ -14,11 +14,6 @@ def setup():
     # Get the training and testing data in a 0.70 training and 0.30 testing split
     (training_images, training_labels), (testing_images, testing_labels) = load_data_set("RecycleDataSet")
     
-    print("Training Labels Distribution:")
-    print(training_labels.sum(axis=0))  
-    
-    
-    
     # The labels
     class_labels = ['Non-Recyclable', 'Recyclable']
     
@@ -44,7 +39,7 @@ def setup():
     # Compile the model
     keras_model.compile(optimizer="adam", loss='binary_crossentropy', metrics=['accuracy'])
     
-    early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=3)
+    early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=1)
     
     # Fits and evaluates the performance 
     keras_model.fit(training_images, training_labels, epochs=7, validation_data=(testing_images, testing_labels), callbacks=[early_stop])
@@ -105,6 +100,3 @@ def load_data_set(path):
     )    
     
     return next(training_data), next(validation_data)
-
-
-setup()
