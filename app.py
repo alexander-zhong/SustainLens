@@ -4,6 +4,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 import classifier 
 import cv2 
 import numpy
+import base64
 
 app = Flask(__name__)
 
@@ -28,13 +29,20 @@ def upload():
         else:
             # Read image data turns it into image array 
             img_data = picture.read()
+            
+            # encoded img for returning back to the template
+            img_encoded = base64.b64encode(img_data)
+            
+            # image array for classifier
             img_array = numpy.frombuffer(img_data, numpy.uint8)
             
             # Decode the image array
             img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
             
+            
+            
             result = classifier.classify(img)
-            return render_template("upload.html", found=True, result=result, picture=picture)
+            return render_template("upload.html", found=True, result=result, picture=img_encoded)
     elif (request.method == "GET"):
         return render_template("upload.html", found=False, result=None, picture=None)
     
