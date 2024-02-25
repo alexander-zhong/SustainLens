@@ -1,7 +1,7 @@
 import cv2
 import numpy
 import matplotlib.pyplot
-from keras import datasets, layers, models, preprocessing, applications
+from keras import datasets, layers, models, preprocessing, applications, callbacks
 
 
 
@@ -14,6 +14,11 @@ def setup():
     # Get the training and testing data in a 0.70 training and 0.30 testing split
     (training_images, training_labels), (testing_images, testing_labels) = load_data_set("RecycleDataSet")
     
+    print("Training Labels Distribution:")
+    print(training_labels.sum(axis=0))  
+    
+    
+    
     # The labels
     class_labels = ['Non-Recyclable', 'Recyclable']
     
@@ -21,14 +26,16 @@ def setup():
     keras_model = models.Sequential()
     
     # Adding layers and as well as transofmring spatial dimensions to one-dimensional vector 
-    keras_model.add(layers.Conv2D(32, (3, 3), activation="relu", input_shape=(64, 64, 3)))
+    keras_model.add(layers.Conv2D(32, (3, 3), activation="relu", input_shape=(256, 256, 3)))
     keras_model.add(layers.MaxPooling2D((2, 2)))
     
     keras_model.add(layers.Conv2D(32, (3, 3), activation="relu"))
     keras_model.add(layers.MaxPooling2D((2, 2)))
     
-    keras_model.add(layers.Conv2D(64, (3, 3), activation="relu"))
+    keras_model.add(layers.Conv2D(64, (5, 5), activation="relu"))
     keras_model.add(layers.MaxPooling2D((2, 2)))
+    
+    keras_model.add(layers.Dropout(0.5))
     
     keras_model.add(layers.Flatten())
     keras_model.add(layers.Dense(64, activation="relu"))
@@ -37,9 +44,10 @@ def setup():
     # Compile the model
     keras_model.compile(optimizer="adam", loss='binary_crossentropy', metrics=['accuracy'])
     
+    early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=3)
+    
     # Fits and evaluates the performance 
-    # NOTE: due small dataset, accuracy and loss will be lower than expected
-    keras_model.fit(training_images, training_labels, epochs=10, validation_data=(testing_images, testing_labels))
+    keras_model.fit(training_images, training_labels, epochs=7, validation_data=(testing_images, testing_labels), callbacks=[early_stop])
     print(keras_model.evaluate(testing_images, testing_labels))
     
     # Saves the model as a file
@@ -56,7 +64,7 @@ def classify(img):
     keras_model = models.load_model('recyclable_model.keras')
 
     # Preprocessing 
-    img = cv2.resize(img, (64, 64)) 
+    img = cv2.resize(img, (256, 256)) 
     img_data = preprocessing.image.img_to_array(img)
     img_data = numpy.expand_dims(img_data, axis = 0)
     
@@ -81,8 +89,8 @@ def load_data_set(path):
     # Creates an augmented training data
     training_data = training_data_generator.flow_from_directory(
         path,
-        target_size=(64, 64), # This would be the size of our pictures
-        batch_size=16, # Small batch size due to small dataset (can be changed once have bigger dataset)
+        target_size=(256, 256), # This would be the size of our pictures
+        batch_size=6, # Small batch size due to small dataset (can be changed once have bigger dataset)
         class_mode="categorical",
         subset="training"
     )
@@ -90,13 +98,13 @@ def load_data_set(path):
     # Creates an augmented training data
     validation_data = training_data_generator.flow_from_directory(
         path,
-        target_size=(64, 64), # This would be the size of our pictures
-        batch_size=16, # Small batch size due to small dataset (can be changed once have bigger dataset)
+        target_size=(256, 256), # This would be the size of our pictures
+        batch_size=6, # Small batch size due to small dataset (can be changed once have bigger dataset)
         class_mode="categorical",
         subset="validation"
-    )
+    )    
     
     return next(training_data), next(validation_data)
 
 
-
+setup()
