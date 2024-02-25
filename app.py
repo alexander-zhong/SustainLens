@@ -15,7 +15,7 @@ configure_uploads(app, photo)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return redirect("/upload")
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
